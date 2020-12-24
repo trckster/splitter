@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 
@@ -9,14 +8,6 @@ import (
 )
 
 func main() {
-	if godotenv.Load() != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	log.Print(os.Getenv("BOT_TOKEN"))
-
-	return
-
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("BOT_TOKEN"))
 	if err != nil {
 		panic(err)
