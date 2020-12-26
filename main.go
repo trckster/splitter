@@ -7,8 +7,12 @@ import (
 	"github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+var bot *tgbotapi.BotAPI
+
 func main() {
-	bot, err := tgbotapi.NewBotAPI(os.Getenv("BOT_TOKEN"))
+	var err error
+	bot, err = tgbotapi.NewBotAPI(os.Getenv("BOT_TOKEN"))
+
 	if err != nil {
 		panic(err)
 	}
@@ -23,15 +27,6 @@ func main() {
 	updates := bot.GetUpdatesChan(u)
 
 	for update := range updates {
-		if update.Message == nil { // ignore any non-Message Updates
-			continue
-		}
-
-		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-		msg.ReplyToMessageID = update.Message.MessageID
-
-		bot.Send(msg)
+		processUpdate(update)
 	}
 }
