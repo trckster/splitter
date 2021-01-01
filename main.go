@@ -1,6 +1,7 @@
 package main
 
 import (
+	"gorm.io/gorm"
 	"log"
 	"os"
 
@@ -8,10 +9,12 @@ import (
 )
 
 var bot *tgbotapi.BotAPI
+var db *gorm.DB
 
 func main() {
 	var err error
 	bot, err = tgbotapi.NewBotAPI(os.Getenv("BOT_TOKEN"))
+	connectToDatabase()
 
 	if err != nil {
 		panic(err)

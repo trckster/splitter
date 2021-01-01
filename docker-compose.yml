@@ -1,6 +1,22 @@
 version: "3.7"
+
 services:
   bot:
     environment:
       - BOT_TOKEN
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_LOGIN
+      - DB_PASSWORD
+      - DB_NAME
     build: .
+    depends_on:
+      - db
+  db:
+    image: postgres
+    ports:
+      - "8001:5432"
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_LOGIN}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
