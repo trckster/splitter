@@ -3,7 +3,7 @@ package main
 type Trip struct {
 	ID int `gorm:"primaryKey"`
 	Name string
-	OwnerId int64
+	OwnerId int
 	ChatId int64
 }
 

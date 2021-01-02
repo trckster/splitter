@@ -37,6 +37,7 @@ func processUpdate(update tgbotapi.Update) {
 
 func (rr *RoutesRegistry) registerRoutes() {
 	rr.addRoute("/help", help)
+	rr.addRoute("/new", createNewTrip)
 }
 
 func (rr *RoutesRegistry) addRoute(prefix string, callback func(update tgbotapi.Update) string) {
