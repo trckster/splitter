@@ -1,18 +1,17 @@
 package main
 
 type Trip struct {
-	Id int
+	ID int `gorm:"primaryKey"`
 	Name string
 	OwnerId int64
 	ChatId int64
 }
 
 type Debt struct {
-	Id int
+	ID int `gorm:"primaryKey"`
 	Description string
 	DebtorId int64
 	LenderId int64
 	Amount float32
 	IsClosed bool
 }
-

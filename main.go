@@ -14,7 +14,10 @@ var db *gorm.DB
 func main() {
 	var err error
 	bot, err = tgbotapi.NewBotAPI(os.Getenv("BOT_TOKEN"))
+
 	connectToDatabase()
+	// How/where it really should be?
+	migrateAllModels()
 
 	if err != nil {
 		panic(err)

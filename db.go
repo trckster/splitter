@@ -34,3 +34,7 @@ func connectToDatabase() {
 		panic(err)
 	}
 }
+
+func migrateAllModels() {
+	db.AutoMigrate(&Trip{}, &Debt{})
+}
