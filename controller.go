@@ -6,6 +6,9 @@ import (
 )
 
 func help(update tgbotapi.Update) string {
+	/*
+	TODO
+	 */
 	return "Wanna some help? Go read documentation dude"
 }
 
@@ -14,7 +17,20 @@ func createNewTrip(update tgbotapi.Update) string {
 
 	pieces := strings.SplitN(text, " ", 2)
 
-	trip := Trip {
+	if len(pieces) < 2 {
+		return "You should specify trip name.\n\nExample:\n/new Vacation in Germany"
+	}
+
+	var trip Trip
+
+	record := db.Where("chat_id", update.Message.Chat.ID).First(&trip)
+
+	// TODO give opportunity to change active trip
+	if record.Error == nil {
+		return "You already have an active trip in this chat"
+	}
+
+	trip = Trip {
 		Name: pieces[1],
 		OwnerId: update.Message.From.ID,
 		ChatId: update.Message.Chat.ID,
