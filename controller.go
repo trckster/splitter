@@ -38,6 +38,8 @@ func createNewTrip(update tgbotapi.Update) string {
 
 	db.Create(&trip)
 
+	trip.addMember(update.Message.From.ID, update.Message.From.UserName)
+
 	return "Successfully created new trip: " + trip.Name
 }
 
