@@ -39,6 +39,8 @@ func (rr *RoutesRegistry) registerRoutes() {
 	rr.addRoute("/help", help)
 	rr.addRoute("/new", createNewTrip)
 	rr.addRoute("/join", addMember)
+	rr.addRoute("/members", getMembers)
+	rr.addRoute("/add", addDebt)
 }
 
 func (rr *RoutesRegistry) addRoute(prefix string, callback func(update tgbotapi.Update) string) {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"strings"
 )
@@ -21,12 +22,10 @@ func createNewTrip(update tgbotapi.Update) string {
 		return "You should specify trip name.\n\nExample:\n/new Vacation in Germany"
 	}
 
-	var trip Trip
-
-	record := db.Where("chat_id", update.Message.Chat.ID).First(&trip)
-
 	// TODO give opportunity to change active trip
-	if record.Error == nil {
+	trip, err := getCurrentTrip(update)
+
+	if err == nil {
 		return "You already have an active trip in this chat"
 	}
 
@@ -44,12 +43,10 @@ func createNewTrip(update tgbotapi.Update) string {
 }
 
 func addMember(update tgbotapi.Update) string {
-	var trip Trip
+	trip, err := getCurrentTrip(update)
 
-	record := db.Where("chat_id", update.Message.Chat.ID).First(&trip)
-
-	if record.Error != nil {
-		return "You have no active trips in this chat yet"
+	if err != nil {
+		return err.Error()
 	}
 
 	username := update.Message.From.UserName
@@ -57,7 +54,7 @@ func addMember(update tgbotapi.Update) string {
 
 	var member TripMember
 
-	record = db.Where("trip_id", trip.ID).Where("user_id", userID).First(&member)
+	record := db.Where("trip_id", trip.ID).Where("user_id", userID).First(&member)
 
 	if record.Error == nil {
 		return "You're already in the trip!"
@@ -66,6 +63,32 @@ func addMember(update tgbotapi.Update) string {
 	trip.addMember(userID, username)
 
 	return "Done, you're in!"
+}
+
+func addDebt(update tgbotapi.Update) string {
+	// TODO
+	return "Work in progress"
+}
+
+func getMembers(update tgbotapi.Update) string {
+	trip, err := getCurrentTrip(update)
+
+	if err != nil {
+		return err.Error()
+	}
+
+	var members []TripMember
+
+	db.Where("trip_id", trip.ID).Find(&members)
+
+	// TODO add member debts
+	response := "Trip members:\n"
+
+	for _, member := range members {
+		response += fmt.Sprintf(" - %s\n", member.Username)
+	}
+
+	return response
 }
 
 func defaultAnswer(update tgbotapi.Update) string {
