@@ -43,6 +43,31 @@ func createNewTrip(update tgbotapi.Update) string {
 	return "Successfully created new trip: " + trip.Name
 }
 
+func addMember(update tgbotapi.Update) string {
+	var trip Trip
+
+	record := db.Where("chat_id", update.Message.Chat.ID).First(&trip)
+
+	if record.Error != nil {
+		return "You have no active trips in this chat yet"
+	}
+
+	username := update.Message.From.UserName
+	userID := update.Message.From.ID
+
+	var member TripMember
+
+	record = db.Where("trip_id", trip.ID).Where("user_id", userID).First(&member)
+
+	if record.Error == nil {
+		return "You're already in the trip!"
+	}
+
+	trip.addMember(userID, username)
+
+	return "Done, you're in!"
+}
+
 func defaultAnswer(update tgbotapi.Update) string {
 	return "Oh, man, I don't know what are you talking about!"
 }
