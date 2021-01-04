@@ -8,6 +8,7 @@ import (
 
 type Route struct {
 	Prefix string
+	Description string
 	Callback func(update tgbotapi.Update) string
 }
 
@@ -22,10 +23,6 @@ func processUpdate(update tgbotapi.Update) {
 
 	log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
-	var rr RoutesRegistry
-
-	rr.registerRoutes()
-
 	answer := rr.determineMethod(update.Message.Text)(update)
 
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, answer)
@@ -35,16 +32,17 @@ func processUpdate(update tgbotapi.Update) {
 }
 
 
+// TODO add descriptions
 func (rr *RoutesRegistry) registerRoutes() {
-	rr.addRoute("/help", help)
-	rr.addRoute("/new", createNewTrip)
-	rr.addRoute("/join", addMember)
-	rr.addRoute("/members", getMembers)
-	rr.addRoute("/add", addDebt)
+	rr.addRoute("/help", "", help)
+	rr.addRoute("/new", "", createNewTrip)
+	rr.addRoute("/join", "", addMember)
+	rr.addRoute("/members", "", getMembers)
+	rr.addRoute("/add", "", addDebt)
 }
 
-func (rr *RoutesRegistry) addRoute(prefix string, callback func(update tgbotapi.Update) string) {
-	rr.Routes = append(rr.Routes, Route{prefix, callback})
+func (rr *RoutesRegistry) addRoute(prefix string, description string, callback func(update tgbotapi.Update) string) {
+	rr.Routes = append(rr.Routes, Route{prefix, description, callback})
 }
 
 func (rr *RoutesRegistry) determineMethod(message string) func(update tgbotapi.Update) string {
@@ -55,4 +53,8 @@ func (rr *RoutesRegistry) determineMethod(message string) func(update tgbotapi.U
 	}
 
 	return defaultAnswer
+}
+
+func (rr *RoutesRegistry) setDescriptions() {
+	// TODO
 }

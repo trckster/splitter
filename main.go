@@ -10,6 +10,7 @@ import (
 
 var bot *tgbotapi.BotAPI
 var db *gorm.DB
+var rr RoutesRegistry
 
 func main() {
 	var err error
@@ -18,6 +19,9 @@ func main() {
 	connectToDatabase()
 	// How/where it really should be?
 	migrateAllModels()
+
+	rr.registerRoutes()
+	rr.setDescriptions()
 
 	if err != nil {
 		panic(err)
