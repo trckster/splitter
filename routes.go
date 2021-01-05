@@ -32,13 +32,12 @@ func processUpdate(update tgbotapi.Update) {
 }
 
 
-// TODO add descriptions
 func (rr *RoutesRegistry) registerRoutes() {
-	rr.addRoute("/help", "Help", help)
-	rr.addRoute("/new", "New", createNewTrip)
-	rr.addRoute("/join", "Join", addMember)
-	rr.addRoute("/members", "Members", getMembers)
-	rr.addRoute("/add", "Add", addDebt)
+	rr.addRoute("/help", "Background information", help)
+	rr.addRoute("/new", "Creates new trip", createNewTrip)
+	rr.addRoute("/join", "Allows you to join current trip", addMember)
+	rr.addRoute("/members", "See all trip members", getMembers)
+	rr.addRoute("/add", "Add a debt", addDebt)
 }
 
 func (rr *RoutesRegistry) addRoute(prefix string, description string, callback func(update tgbotapi.Update) string) {

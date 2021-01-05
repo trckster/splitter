@@ -66,7 +66,7 @@ func addMember(update tgbotapi.Update) string {
 }
 
 func addDebt(update tgbotapi.Update) string {
-	// TODO
+
 	return "Work in progress"
 }
 
@@ -82,7 +82,7 @@ func getMembers(update tgbotapi.Update) string {
 	db.Where("trip_id", trip.ID).Find(&members)
 
 	// TODO add member debts
-	response := "Trip members:\n"
+	response := "\"" + trip.Name + "\" members:\n"
 
 	for _, member := range members {
 		response += fmt.Sprintf(" - %s\n", member.Username)
