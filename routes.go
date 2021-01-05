@@ -1,7 +1,7 @@
 package main
 
 import (
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
 	"strings"
 )
@@ -34,11 +34,11 @@ func processUpdate(update tgbotapi.Update) {
 
 // TODO add descriptions
 func (rr *RoutesRegistry) registerRoutes() {
-	rr.addRoute("/help", "", help)
-	rr.addRoute("/new", "", createNewTrip)
-	rr.addRoute("/join", "", addMember)
-	rr.addRoute("/members", "", getMembers)
-	rr.addRoute("/add", "", addDebt)
+	rr.addRoute("/help", "Help", help)
+	rr.addRoute("/new", "New", createNewTrip)
+	rr.addRoute("/join", "Join", addMember)
+	rr.addRoute("/members", "Members", getMembers)
+	rr.addRoute("/add", "Add", addDebt)
 }
 
 func (rr *RoutesRegistry) addRoute(prefix string, description string, callback func(update tgbotapi.Update) string) {
@@ -56,5 +56,18 @@ func (rr *RoutesRegistry) determineMethod(message string) func(update tgbotapi.U
 }
 
 func (rr *RoutesRegistry) setDescriptions() {
-	// TODO
+	var commands []tgbotapi.BotCommand
+
+	for _, route := range rr.Routes {
+		commands = append(commands, tgbotapi.BotCommand{
+			Command:     route.Prefix,
+			Description: route.Description,
+		})
+	}
+
+	err := bot.SetMyCommands(commands)
+
+	if err != nil {
+		panic(err)
+	}
 }

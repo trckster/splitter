@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 var bot *tgbotapi.BotAPI
@@ -34,7 +34,11 @@ func main() {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
-	updates := bot.GetUpdatesChan(u)
+	updates, err := bot.GetUpdatesChan(u)
+
+	if err != nil {
+		panic(err)
+	}
 
 	for update := range updates {
 		processUpdate(update)
