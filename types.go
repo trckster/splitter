@@ -14,6 +14,7 @@ type TripMember struct {
 	gorm.Model
 	UserID int
 	Username string
+	FirstName string
 	TripID uint
 	Trip Trip
 }
@@ -27,11 +28,12 @@ type Debt struct {
 	IsClosed bool
 }
 
-func (trip *Trip) addMember(userID int, username string) *TripMember {
+func (trip *Trip) addMember(userID int, username string, name string) *TripMember {
 	member := TripMember {
 		UserID: userID,
 		TripID: trip.ID,
 		Username: username,
+		FirstName: name,
 	}
 
 	db.Create(&member)

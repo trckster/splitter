@@ -37,7 +37,7 @@ func createNewTrip(update tgbotapi.Update) string {
 
 	db.Create(&trip)
 
-	trip.addMember(update.Message.From.ID, update.Message.From.UserName)
+	trip.addMember(update.Message.From.ID, update.Message.From.UserName, update.Message.From.FirstName)
 
 	return "Successfully created new trip: " + trip.Name
 }
@@ -60,7 +60,7 @@ func addMember(update tgbotapi.Update) string {
 		return "You're already in the trip!"
 	}
 
-	trip.addMember(userID, username)
+	trip.addMember(userID, username, update.Message.From.FirstName)
 
 	return "Done, you're in!"
 }
@@ -85,7 +85,7 @@ func getMembers(update tgbotapi.Update) string {
 	response := "\"" + trip.Name + "\" members:\n"
 
 	for _, member := range members {
-		response += fmt.Sprintf(" - %s\n", member.Username)
+		response += fmt.Sprintf(" - %s (%s)\n", member.FirstName, member.Username)
 	}
 
 	return response
