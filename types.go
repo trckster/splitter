@@ -5,8 +5,8 @@ import "gorm.io/gorm"
 type Trip struct {
 	gorm.Model
 	Name string
-	OwnerId int
-	ChatId int64
+	OwnerID int
+	ChatID int64
 	Members []TripMember
 }
 
@@ -19,11 +19,19 @@ type TripMember struct {
 	Trip Trip
 }
 
-type Debt struct {
+type Expense struct {
 	gorm.Model
 	Description string
-	DebtorId int64
-	LenderId int64
+	Amount float32
+	TripID uint
+	PayingID uint
+	TripMember TripMember `gorm:"foreignKey:PayingID"`
+	Trip Trip
+}
+
+type Debt struct {
+	gorm.Model
+	DebtorID int64
 	Amount float32
 	IsClosed bool
 }

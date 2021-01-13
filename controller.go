@@ -31,8 +31,8 @@ func createNewTrip(update tgbotapi.Update) string {
 
 	trip = Trip {
 		Name: pieces[1],
-		OwnerId: update.Message.From.ID,
-		ChatId: update.Message.Chat.ID,
+		OwnerID: update.Message.From.ID,
+		ChatID: update.Message.Chat.ID,
 	}
 
 	db.Create(&trip)
