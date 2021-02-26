@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"strconv"
 	"strings"
 )
 
@@ -66,8 +67,38 @@ func addMember(update tgbotapi.Update) string {
 }
 
 func addDebt(update tgbotapi.Update) string {
+	pieces := strings.Split(update.Message.Text, " ")
 
-	return "Work in progress"
+	usage := "Usage: /add <sum> <description>"
+
+	if len(pieces) < 3 {
+		return usage
+	}
+
+	amount, err := strconv.Atoi(pieces[1])
+
+	if err != nil {
+		return usage
+	}
+
+	description := pieces[2]
+
+	trip, err := getCurrentTrip(update)
+
+	if err != nil {
+		return err.Error()
+	}
+
+	expense, err := trip.addExpense(update.Message.From.ID, amount, description)
+
+	if err != nil {
+		return err.Error()
+	}
+
+	expense.split(update.Message.From.ID)
+
+	// TODO add more information
+	return "Expense created"
 }
 
 func getMembers(update tgbotapi.Update) string {

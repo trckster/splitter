@@ -13,7 +13,7 @@ func constructDataSourceName() string {
 	login := os.Getenv("DB_LOGIN")
 	password := os.Getenv("DB_PASSWORD")
 	database := os.Getenv("DB_NAME")
-	
+
 	result := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Europe/Moscow",
 		host,
 		login,
@@ -36,5 +36,5 @@ func connectToDatabase() {
 }
 
 func migrateAllModels() {
-	db.AutoMigrate(&Trip{}, &Debt{}, &TripMember{})
+	db.AutoMigrate(&Trip{}, &Debt{}, &TripMember{}, &Expense{})
 }
