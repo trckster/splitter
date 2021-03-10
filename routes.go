@@ -7,9 +7,9 @@ import (
 )
 
 type Route struct {
-	Prefix string
+	Prefix      string
 	Description string
-	Callback func(update tgbotapi.Update) string
+	Callback    func(update tgbotapi.Update) (string, interface{})
 }
 
 type RoutesRegistry struct {
@@ -23,14 +23,42 @@ func processUpdate(update tgbotapi.Update) {
 
 	log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
-	answer := rr.determineMethod(update.Message.Text)(update)
+	signature, markdown := getReplyMessage(update)
+
+	language := determineLanguage(update)
+
+	answer := messages[language][signature]
 
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, answer)
 	msg.ReplyToMessageID = update.Message.MessageID
+	msg.ReplyMarkup = markdown
 
 	bot.Send(msg)
 }
 
+func getReplyMessage(update tgbotapi.Update) (string, interface{}) {
+	if update.Message.Chat.ID >= 0 {
+		return ":use_group", nil
+	}
+
+	return rr.determineMethod(update.Message.Text)(update)
+}
+
+func determineLanguage(update tgbotapi.Update) string {
+	trip, err := getCurrentTrip(update)
+
+	if err == nil {
+		return trip.Language
+	}
+
+	userLanguage := update.Message.From.LanguageCode
+
+	if messages[userLanguage] != nil {
+		return userLanguage
+	}
+
+	return defaultLanguage
+}
 
 func (rr *RoutesRegistry) registerRoutes() {
 	rr.addRoute("/help", "Background information", help)
@@ -40,12 +68,12 @@ func (rr *RoutesRegistry) registerRoutes() {
 	rr.addRoute("/add", "Add a debt", addDebt)
 }
 
-func (rr *RoutesRegistry) addRoute(prefix string, description string, callback func(update tgbotapi.Update) string) {
+func (rr *RoutesRegistry) addRoute(prefix string, description string, callback func(update tgbotapi.Update) (string, interface{})) {
 	rr.Routes = append(rr.Routes, Route{prefix, description, callback})
 }
 
-func (rr *RoutesRegistry) determineMethod(message string) func(update tgbotapi.Update) string {
-	for _, route := range rr.Routes  {
+func (rr *RoutesRegistry) determineMethod(message string) func(update tgbotapi.Update) (string, interface{}) {
+	for _, route := range rr.Routes {
 		if strings.HasPrefix(message, route.Prefix) {
 			return route.Callback
 		}

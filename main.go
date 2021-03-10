@@ -12,6 +12,8 @@ var bot *tgbotapi.BotAPI
 var db *gorm.DB
 var rr RoutesRegistry
 
+
+
 func main() {
 	var err error
 	bot, err = tgbotapi.NewBotAPI(os.Getenv("BOT_TOKEN"))
@@ -19,6 +21,8 @@ func main() {
 	connectToDatabase()
 	// How/where it really should be?
 	migrateAllModels()
+
+	defineMessages()
 
 	rr.registerRoutes()
 	rr.setDescriptions()

@@ -9,6 +9,7 @@ type Trip struct {
 	Name string
 	OwnerID int
 	ChatID int64
+	Language string
 	Members []TripMember
 }
 
@@ -58,7 +59,7 @@ func (trip *Trip) addExpense(payingID int, amount int, description string) (*Exp
 	result := db.Where("user_id", payingID).Where("trip_id", trip.ID).Find(&member)
 
 	if result.Error != nil {
-		return nil, newError("You're not a trip member, try /join")
+		return nil, newError(":you_are_not_a_trip_member")
 	}
 
 	expense := &Expense {

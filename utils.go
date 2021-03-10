@@ -23,7 +23,7 @@ func getCurrentTrip(update tgbotapi.Update) (Trip, error) {
 	record := db.Where("chat_id", update.Message.Chat.ID).First(&trip)
 
 	if record.Error != nil {
-		return trip, newError("You have no active trips in this chat yet")
+		return trip, newError(":no_active_trips")
 	}
 
 	return trip, nil
