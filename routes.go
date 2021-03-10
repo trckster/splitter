@@ -9,11 +9,17 @@ import (
 type Route struct {
 	Prefix      string
 	Description string
-	Callback    func(update tgbotapi.Update) (string, interface{})
+	Callback    func(update tgbotapi.Update) Answer
 }
 
 type RoutesRegistry struct {
 	Routes []Route
+}
+
+type Answer struct {
+	Signature  string
+	Keyboard   tgbotapi.InlineKeyboardMarkup
+	Parameters []string
 }
 
 func processUpdate(update tgbotapi.Update) {
@@ -23,22 +29,27 @@ func processUpdate(update tgbotapi.Update) {
 
 	log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
-	signature, markdown := getReplyMessage(update)
+	answer := getReplyMessage(update)
 
 	language := determineLanguage(update)
 
-	answer := messages[language][signature]
+	messageText := messages[language][answer.Signature]
 
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, answer)
+	// TODO substitute values
+
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, messageText)
 	msg.ReplyToMessageID = update.Message.MessageID
-	msg.ReplyMarkup = markdown
+
+	if len(answer.Keyboard.InlineKeyboard) != 0 {
+		msg.ReplyMarkup = answer.Keyboard
+	}
 
 	bot.Send(msg)
 }
 
-func getReplyMessage(update tgbotapi.Update) (string, interface{}) {
+func getReplyMessage(update tgbotapi.Update) Answer {
 	if update.Message.Chat.ID >= 0 {
-		return ":use_group", nil
+		return Answer{Signature: ":use_group"}
 	}
 
 	return rr.determineMethod(update.Message.Text)(update)
@@ -68,11 +79,11 @@ func (rr *RoutesRegistry) registerRoutes() {
 	rr.addRoute("/add", "Add a debt", addDebt)
 }
 
-func (rr *RoutesRegistry) addRoute(prefix string, description string, callback func(update tgbotapi.Update) (string, interface{})) {
+func (rr *RoutesRegistry) addRoute(prefix string, description string, callback func(update tgbotapi.Update) Answer) {
 	rr.Routes = append(rr.Routes, Route{prefix, description, callback})
 }
 
-func (rr *RoutesRegistry) determineMethod(message string) func(update tgbotapi.Update) (string, interface{}) {
+func (rr *RoutesRegistry) determineMethod(message string) func(update tgbotapi.Update) Answer {
 	for _, route := range rr.Routes {
 		if strings.HasPrefix(message, route.Prefix) {
 			return route.Callback

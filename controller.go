@@ -7,48 +7,51 @@ import (
 	"strings"
 )
 
-func help(update tgbotapi.Update) (string, interface{}) {
+func help(update tgbotapi.Update) Answer {
 	/*
-	TODO
-	 */
-	return ":help", nil
+		TODO
+	*/
+	return Answer{Signature: ":help"}
 }
 
-func createNewTrip(update tgbotapi.Update) (string, interface{}) {
+func createNewTrip(update tgbotapi.Update) Answer {
 	text := update.Message.Text
 
 	pieces := strings.SplitN(text, " ", 2)
 
 	if len(pieces) < 2 {
-		return ":specify_trip", nil
+		return Answer{Signature: ":specify_trip"}
 	}
 
 	// TODO give opportunity to change active trip
 	trip, err := getCurrentTrip(update)
 
 	if err == nil {
-		return ":already_has_active_trip", nil
+		return Answer{Signature: ":already_has_active_trip"}
 	}
 
-	trip = Trip {
-		Name: pieces[1],
+	trip = Trip{
+		Name:    pieces[1],
+		Language: update.Message.From.LanguageCode,
 		OwnerID: update.Message.From.ID,
-		ChatID: update.Message.Chat.ID,
+		ChatID:  update.Message.Chat.ID,
 	}
 
 	db.Create(&trip)
 
 	trip.addMember(update.Message.From.ID, update.Message.From.UserName, update.Message.From.FirstName)
 
-	// TODO TODO TODO DETERMINE THE FUCK YOU DO WITH SUBSTITUTIONS
-	return fmt.Sprintf("Successfully created new trip: %s", trip.Name), nil
+	return Answer{
+		Signature:  ":new_trip",
+		Parameters: []string{trip.Name},
+	}
 }
 
-func addMember(update tgbotapi.Update) (string, interface{}) {
+func addMember(update tgbotapi.Update) Answer {
 	trip, err := getCurrentTrip(update)
 
 	if err != nil {
-		return err.Error(), nil
+		return Answer{Signature: err.Error()}
 	}
 
 	username := update.Message.From.UserName
@@ -59,25 +62,25 @@ func addMember(update tgbotapi.Update) (string, interface{}) {
 	record := db.Where("trip_id", trip.ID).Where("user_id", userID).First(&member)
 
 	if record.Error == nil {
-		return ":you_are_already_in", nil
+		return Answer{Signature: ":you_are_already_in"}
 	}
 
 	trip.addMember(userID, username, update.Message.From.FirstName)
 
-	return ":you_are_in", nil
+	return Answer{Signature: ":you_are_in"}
 }
 
-func addDebt(update tgbotapi.Update) (string, interface{}) {
+func addDebt(update tgbotapi.Update) Answer {
 	pieces := strings.Split(update.Message.Text, " ")
 
 	if len(pieces) < 3 {
-		return ":add_usage", nil
+		return Answer{Signature: ":add_usage"}
 	}
 
 	amount, err := strconv.Atoi(pieces[1])
 
 	if err != nil {
-		return ":add_usage", nil
+		return Answer{Signature: ":add_usage"}
 	}
 
 	description := pieces[2]
@@ -85,26 +88,26 @@ func addDebt(update tgbotapi.Update) (string, interface{}) {
 	trip, err := getCurrentTrip(update)
 
 	if err != nil {
-		return err.Error(), nil
+		return Answer{Signature: err.Error()}
 	}
 
 	expense, err := trip.addExpense(update.Message.From.ID, amount, description)
 
 	if err != nil {
-		return err.Error(), nil
+		return Answer{Signature: err.Error()}
 	}
 
 	expense.split(update.Message.From.ID)
 
 	// TODO add more information
-	return ":expense_created", nil
+	return Answer{Signature: ":expense_created"}
 }
 
-func getMembers(update tgbotapi.Update) (string, interface{}) {
+func getMembers(update tgbotapi.Update) Answer {
 	trip, err := getCurrentTrip(update)
 
 	if err != nil {
-		return err.Error(), nil
+		return Answer{Signature: err.Error()}
 	}
 
 	var members []TripMember
@@ -118,10 +121,12 @@ func getMembers(update tgbotapi.Update) (string, interface{}) {
 		response += fmt.Sprintf(" - %s (%s)\n", member.FirstName, member.Username)
 	}
 
-	return response, nil
-	// TODO TODO TODO HERE TOO
+	return Answer{
+		Signature:  ":hack",
+		Parameters: []string{response},
+	}
 }
 
-func defaultAnswer(update tgbotapi.Update) (string, interface{}) {
-	return ":default_answer", nil
+func defaultAnswer(update tgbotapi.Update) Answer {
+	return Answer{Signature: ":default_answer"}
 }

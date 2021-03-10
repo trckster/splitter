@@ -22,6 +22,8 @@ func defineMessages() {
 	messages["en"][":expense_created"] = "Expense created"
 	messages["en"][":default_answer"] = "Oh, man, I don't know what are you talking about!"
 	messages["en"][":use_group"] = "Add bot to the group chat to use it"
+	messages["en"][":new_trip"] = "Successfully created new trip: %s"
+	messages["en"][":hack"] = "%s"
 
 	messages["ru"][":use_group"] = "Чтобы использовать бота добавьте его в чат"
 }
