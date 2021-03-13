@@ -22,7 +22,7 @@ func main() {
 	// How/where it really should be?
 	migrateAllModels()
 
-	defineMessages()
+	defineTranslations()
 
 	rr.registerRoutes()
 	rr.setDescriptions()

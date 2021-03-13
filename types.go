@@ -59,7 +59,7 @@ func (trip *Trip) addExpense(payingID int, amount int, description string) (*Exp
 	result := db.Where("user_id", payingID).Where("trip_id", trip.ID).Find(&member)
 
 	if result.Error != nil {
-		return nil, newError(":you_are_not_a_trip_member")
+		return nil, newError("you-are-not-a-trip-member")
 	}
 
 	expense := &Expense {

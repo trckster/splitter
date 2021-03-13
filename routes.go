@@ -16,12 +16,6 @@ type RoutesRegistry struct {
 	Routes []Route
 }
 
-type Answer struct {
-	Signature  string
-	Keyboard   tgbotapi.InlineKeyboardMarkup
-	Parameters []string
-}
-
 func processUpdate(update tgbotapi.Update) {
 	if update.Message == nil {
 		return
@@ -31,47 +25,21 @@ func processUpdate(update tgbotapi.Update) {
 
 	answer := getReplyMessage(update)
 
-	language := determineLanguage(update)
+	message := answer.constructBotMessage(update)
 
-	messageText := messages[language][answer.Signature]
-
-	// TODO substitute values
-
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, messageText)
-	msg.ReplyToMessageID = update.Message.MessageID
-
-	if len(answer.Keyboard.InlineKeyboard) != 0 {
-		msg.ReplyMarkup = answer.Keyboard
-	}
-
-	bot.Send(msg)
+	bot.Send(message)
 }
 
 func getReplyMessage(update tgbotapi.Update) Answer {
 	if update.Message.Chat.ID >= 0 {
-		return Answer{Signature: ":use_group"}
+		return Answer{Signature: "use-group"}
 	}
 
 	return rr.determineMethod(update.Message.Text)(update)
 }
 
-func determineLanguage(update tgbotapi.Update) string {
-	trip, err := getCurrentTrip(update)
-
-	if err == nil {
-		return trip.Language
-	}
-
-	userLanguage := update.Message.From.LanguageCode
-
-	if messages[userLanguage] != nil {
-		return userLanguage
-	}
-
-	return defaultLanguage
-}
-
 func (rr *RoutesRegistry) registerRoutes() {
+	rr.addRoute("/start", "Start", start)
 	rr.addRoute("/help", "Background information", help)
 	rr.addRoute("/new", "Creates new trip", createNewTrip)
 	rr.addRoute("/join", "Allows you to join current trip", addMember)
