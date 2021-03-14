@@ -11,6 +11,12 @@ func start(update tgbotapi.Update) Answer {
 	return Answer{Signature: "no-active-trips", Keyboard: createTripKeyboard}
 }
 
+func fsm(update tgbotapi.Update) Answer {
+	initState(update, "CreateTrip")
+
+	return Answer{Signature: "hack", Parameters: map[string]string{":hack": "What is your name?"}}
+}
+
 func createNewTrip(update tgbotapi.Update) Answer {
 	text := update.Message.Text
 

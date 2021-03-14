@@ -36,5 +36,5 @@ func connectToDatabase() {
 }
 
 func migrateAllModels() {
-	db.AutoMigrate(&Trip{}, &Debt{}, &TripMember{}, &Expense{})
+	db.AutoMigrate(&Trip{}, &Debt{}, &TripMember{}, &Expense{}, &FSM{})
 }

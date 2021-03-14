@@ -23,7 +23,13 @@ func processUpdate(update tgbotapi.Update) {
 
 	log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
-	answer := getReplyMessage(update)
+	var answer Answer
+
+	if stateMethod, state := getCurrentStateMethod(update); stateMethod != nil {
+		answer = stateMethod(update, state)
+	} else {
+		answer = getReplyMessage(update)
+	}
 
 	message := answer.constructBotMessage(update)
 
@@ -40,6 +46,7 @@ func getReplyMessage(update tgbotapi.Update) Answer {
 
 func (rr *RoutesRegistry) registerRoutes() {
 	rr.addRoute("/start", "Start", start)
+	rr.addRoute("/fsm_test", "FSM test", fsm)
 	rr.addRoute("/help", "Background information", help)
 	rr.addRoute("/new", "Creates new trip", createNewTrip)
 	rr.addRoute("/join", "Allows you to join current trip", addMember)
