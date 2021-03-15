@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"gorm.io/gorm"
 )
@@ -26,15 +28,21 @@ var StateToMethod = map[string]func(update tgbotapi.Update, state *FSM) Answer{
 }
 
 func testFirstState(update tgbotapi.Update, state *FSM) Answer {
+	state.addData("name", update.Message.Text).saveData()
+
 	state.next()
 
 	return Answer{Signature: "hack", Parameters: map[string]string{":hack": "Your name saved. Something other?"}}
 }
 
 func testSecondState(update tgbotapi.Update, state *FSM) Answer {
+	data := state.getData()
+
+	ansText := fmt.Sprintf("Your name: %s", data["name"].(string))
+
 	state.next()
 
-	return Answer{Signature: "hack", Parameters: map[string]string{":hack": "Thank you. We saved all."}}
+	return Answer{Signature: "hack", Parameters: map[string]string{":hack": ansText}}
 }
 
 func initState(update tgbotapi.Update, FSMName string) {
@@ -57,6 +65,36 @@ func (state *FSM) next() {
 
 		db.Save(&state)
 	}
+}
+
+func (state *FSM) getData() map[string]interface{} {
+	var data map[string]interface{}
+
+	if err := json.Unmarshal([]byte(state.Data), &data); err != nil {
+		panic(err)
+	}
+
+	return data
+}
+
+func (state *FSM) addData(key string, additionalData interface{}) *FSM {
+	var data map[string]interface{}
+
+	if err := json.Unmarshal([]byte(state.Data), &data); err != nil {
+		data = make(map[string]interface{})
+	}
+
+	data[key] = additionalData
+
+	dataAsBytes, _ := json.Marshal(data)
+
+	state.Data = string(dataAsBytes)
+
+	return state
+}
+
+func (state *FSM) saveData() {
+	db.Save(state)
 }
 
 func getNextState(currentState string) string {
