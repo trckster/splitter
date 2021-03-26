@@ -18,8 +18,8 @@ func defineMessages() {
 	messages["ru"] = make(map[string]string)
 
 	messages["en"]["help"] = "Wanna some help? Go read documentation dude"
-	messages["en"]["specify-trip"] = "You should specify trip name.\n\nExample:\n/new Vacation in Germany"
 	messages["en"]["already-has-active-trip"] = "You already have an active trip in this chat"
+	messages["en"]["create-first-trip"] = "Create your first trip, so you can split expenses."
 	messages["en"]["no-active-trips"] = "You have no active trips in this chat yet"
 	messages["en"]["you-are-already-in"] = "You're already in the trip!"
 	messages["en"]["you-are-in"] = "Done, you're in!"
@@ -32,6 +32,10 @@ func defineMessages() {
 	messages["en"]["hack"] = ":hack"
 
 	messages["ru"]["use-group"] = "Чтобы использовать бота добавьте его в чат"
+
+	// New messages
+
+	messages["en"]["input-trip-name"] = "Enter new trip name, please:"
 }
 
 func defineKeyboardsTexts() {
@@ -41,4 +45,6 @@ func defineKeyboardsTexts() {
 	keyboardsTexts["ru"] = make(map[string]string)
 
 	keyboardsTexts["en"]["create-trip"] = "Create new trip"
+
+	keyboardsTexts["ru"]["create-trip"] = "Создать поездку"
 }

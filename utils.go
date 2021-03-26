@@ -16,20 +16,14 @@ func newError(message string) *SplitterError {
 	return &SplitterError{message: message}
 }
 
-func getCurrentTrip(update tgbotapi.Update) (Trip, error) {
+func getCurrentTrip(message *tgbotapi.Message) (Trip, error) {
 	var trip Trip
 
-	record := db.Where("chat_id", update.Message.Chat.ID).First(&trip)
+	record := db.Where("chat_id", message.Chat.ID).First(&trip)
 
 	if record.Error != nil {
 		return trip, newError("no-active-trips")
 	}
 
 	return trip, nil
-}
-
-func hasCurrentTrip(update tgbotapi.Update) bool {
-	_, err := getCurrentTrip(update)
-
-	return err == nil
 }

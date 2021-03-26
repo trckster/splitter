@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
 	"os"
+	"time"
 )
 
 func constructDataSourceName() string {
@@ -28,11 +30,20 @@ func connectToDatabase() {
 	dsn := constructDataSourceName()
 
 	var err error
-	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
-	if err != nil {
-		panic(err)
+
+	for {
+		log.Println("Trying to connect database...")
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+		if err == nil {
+			break
+		}
+
+		time.Sleep(1 * time.Second)
 	}
+
+	log.Println("Connected.")
 }
 
 func migrateAllModels() {

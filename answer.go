@@ -13,20 +13,12 @@ type Answer struct {
 	Parameters map[string]string
 }
 
-//type KeyboardElement struct {
-//	Signature  string
-//	Data       string
-//	Parameters []string
-//}
-
-func (answer *Answer) constructBotMessage(update tgbotapi.Update) tgbotapi.MessageConfig {
-	answer.determineLanguage(update)
-
-
+func (answer *Answer) constructBotMessage(message *tgbotapi.Message) tgbotapi.MessageConfig {
+	answer.determineLanguage(message)
 	answer.prepareMessage()
 
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, answer.Message)
-	msg.ReplyToMessageID = update.Message.MessageID
+	msg := tgbotapi.NewMessage(message.Chat.ID, answer.Message)
+	msg.ReplyToMessageID = message.MessageID
 
 	if len(answer.Keyboard.InlineKeyboard) != 0 {
 		answer.prepareKeyboard()
@@ -36,15 +28,15 @@ func (answer *Answer) constructBotMessage(update tgbotapi.Update) tgbotapi.Messa
 	return msg
 }
 
-func (answer *Answer) determineLanguage(update tgbotapi.Update) {
-	trip, err := getCurrentTrip(update)
+func (answer *Answer) determineLanguage(message *tgbotapi.Message) {
+	trip, err := getCurrentTrip(message)
 
 	if err == nil {
 		answer.Language = trip.Language
 		return
 	}
 
-	userLanguage := update.Message.From.LanguageCode
+	userLanguage := message.From.LanguageCode
 
 	if messages[userLanguage] != nil {
 		answer.Language = userLanguage
@@ -67,6 +59,12 @@ func (answer *Answer) prepareMessage() {
 	answer.Message = messages[answer.Language][answer.Signature]
 
 	answer.Message = substituteBindings(answer.Message, answer.Parameters)
+}
+
+func (answer *Answer) send(incomingMessage *tgbotapi.Message) {
+	message := answer.constructBotMessage(incomingMessage)
+
+	bot.Send(message)
 }
 
 func substituteBindings(string string, parameters map[string]string) string {

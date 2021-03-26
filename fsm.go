@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"gorm.io/gorm"
 )
@@ -17,38 +16,18 @@ type FSM struct {
 
 var AvailableFSMs = map[string][]string{
 	"CreateTrip": {
-		"save-name",
-		"save-something-other",
+		"receive-name-and-create-trip",
 	},
 }
 
 var StateToMethod = map[string]func(update tgbotapi.Update, state *FSM) Answer{
-	"save-name":            testFirstState,
-	"save-something-other": testSecondState,
+	"receive-name-and-create-trip": saveName,
 }
 
-func testFirstState(update tgbotapi.Update, state *FSM) Answer {
-	state.addData("name", update.Message.Text).saveData()
-
-	state.next()
-
-	return Answer{Signature: "hack", Parameters: map[string]string{":hack": "Your name saved. Something other?"}}
-}
-
-func testSecondState(update tgbotapi.Update, state *FSM) Answer {
-	data := state.getData()
-
-	ansText := fmt.Sprintf("Your name: %s", data["name"].(string))
-
-	state.next()
-
-	return Answer{Signature: "hack", Parameters: map[string]string{":hack": ansText}}
-}
-
-func initState(update tgbotapi.Update, FSMName string) {
+func initState(from *tgbotapi.User, chat *tgbotapi.Chat, FSMName string) {
 	state := FSM{
-		UserID: update.Message.From.ID,
-		ChatID: update.Message.Chat.ID,
+		UserID: from.ID,
+		ChatID: chat.ID,
 		State:  AvailableFSMs[FSMName][0],
 	}
 

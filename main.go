@@ -19,6 +19,7 @@ func main() {
 	bot, err = tgbotapi.NewBotAPI(os.Getenv("BOT_TOKEN"))
 
 	connectToDatabase()
+
 	// How/where it really should be?
 	migrateAllModels()
 
@@ -45,6 +46,12 @@ func main() {
 	}
 
 	for update := range updates {
-		processUpdate(update)
+		if update.CallbackQuery != nil {
+			processCallback(update)
+		}
+
+		if update.Message != nil {
+			processMessage(update)
+		}
 	}
 }

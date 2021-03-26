@@ -8,39 +8,31 @@ import (
 )
 
 func start(update tgbotapi.Update) Answer {
-	return Answer{Signature: "no-active-trips", Keyboard: createTripKeyboard}
+	// TODO Check has no trip
+	return Answer{Signature: "create-first-trip", Keyboard: createTripKeyboard}
 }
 
-func fsm(update tgbotapi.Update) Answer {
-	initState(update, "CreateTrip")
-
-	return Answer{Signature: "hack", Parameters: map[string]string{":hack": "What is your name?"}}
-}
-
-func createNewTrip(update tgbotapi.Update) Answer {
+func saveName(update tgbotapi.Update, state *FSM) Answer {
 	text := update.Message.Text
 
-	pieces := strings.SplitN(text, " ", 2)
-
-	if len(pieces) < 2 {
-		return Answer{Signature: "specify-trip"}
-	}
-
 	// TODO give opportunity to change active trip
-	trip, err := getCurrentTrip(update)
+	trip, err := getCurrentTrip(update.Message)
 
 	if err == nil {
+		state.next()
 		return Answer{Signature: "already-has-active-trip"}
 	}
 
 	trip = Trip{
-		Name:     pieces[1],
+		Name:     text,
 		Language: update.Message.From.LanguageCode,
 		OwnerID:  update.Message.From.ID,
 		ChatID:   update.Message.Chat.ID,
 	}
 
 	db.Create(&trip)
+
+	state.next()
 
 	trip.addMember(update.Message.From.ID, update.Message.From.UserName, update.Message.From.FirstName)
 
@@ -51,7 +43,7 @@ func createNewTrip(update tgbotapi.Update) Answer {
 }
 
 func addMember(update tgbotapi.Update) Answer {
-	trip, err := getCurrentTrip(update)
+	trip, err := getCurrentTrip(update.Message)
 
 	if err != nil {
 		return Answer{Signature: err.Error()}
@@ -88,7 +80,7 @@ func addDebt(update tgbotapi.Update) Answer {
 
 	description := pieces[2]
 
-	trip, err := getCurrentTrip(update)
+	trip, err := getCurrentTrip(update.Message)
 
 	if err != nil {
 		return Answer{Signature: err.Error()}
@@ -107,7 +99,7 @@ func addDebt(update tgbotapi.Update) Answer {
 }
 
 func getMembers(update tgbotapi.Update) Answer {
-	trip, err := getCurrentTrip(update)
+	trip, err := getCurrentTrip(update.Message)
 
 	if err != nil {
 		return Answer{Signature: err.Error()}

@@ -16,12 +16,8 @@ type RoutesRegistry struct {
 	Routes []Route
 }
 
-func processUpdate(update tgbotapi.Update) {
-	if update.Message == nil {
-		return
-	}
-
-	log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+func processMessage(update tgbotapi.Update) {
+	log.Printf("Message: [%s] %s", update.Message.From.UserName, update.Message.Text)
 
 	var answer Answer
 
@@ -31,9 +27,21 @@ func processUpdate(update tgbotapi.Update) {
 		answer = getReplyMessage(update)
 	}
 
-	message := answer.constructBotMessage(update)
+	answer.send(update.Message)
+}
 
-	bot.Send(message)
+func processCallback(update tgbotapi.Update) {
+	log.Printf("Callback: [%s] %s", update.CallbackQuery.From.UserName, update.CallbackQuery.Data)
+
+	var answer Answer
+
+	if update.CallbackQuery.Data == "ask-name" {
+		answer = askName(update)
+	}
+
+	bot.AnswerCallbackQuery(tgbotapi.NewCallback(update.CallbackQuery.ID, ""))
+
+	answer.send(update.CallbackQuery.Message)
 }
 
 func getReplyMessage(update tgbotapi.Update) Answer {
@@ -46,9 +54,7 @@ func getReplyMessage(update tgbotapi.Update) Answer {
 
 func (rr *RoutesRegistry) registerRoutes() {
 	rr.addRoute("/start", "Start", start)
-	rr.addRoute("/fsm_test", "FSM test", fsm)
 	rr.addRoute("/help", "Background information", help)
-	rr.addRoute("/new", "Creates new trip", createNewTrip)
 	rr.addRoute("/join", "Allows you to join current trip", addMember)
 	rr.addRoute("/members", "See all trip members", getMembers)
 	rr.addRoute("/add", "Add a debt", addDebt)
