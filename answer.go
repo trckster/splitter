@@ -47,12 +47,21 @@ func (answer *Answer) determineLanguage(message *tgbotapi.Message) {
 }
 
 func (answer *Answer) prepareKeyboard() {
-	for i, row := range answer.Keyboard.InlineKeyboard {
-		for j, element := range row {
-			element.Text = keyboardsTexts[answer.Language][element.Text]
-			answer.Keyboard.InlineKeyboard[i][j].Text = substituteBindings(element.Text, answer.Parameters)
+	var newKeyboardMarkup [][]tgbotapi.InlineKeyboardButton
+
+	for _, row := range answer.Keyboard.InlineKeyboard {
+		var newRow []tgbotapi.InlineKeyboardButton
+
+		for _, element := range row {
+			newButton := element
+			newButton.Text = substituteBindings(keyboardsTexts[answer.Language][element.Text], answer.Parameters)
+			newRow = append(newRow, newButton)
 		}
+
+		newKeyboardMarkup = append(newKeyboardMarkup, newRow)
 	}
+
+	answer.Keyboard.InlineKeyboard = newKeyboardMarkup
 }
 
 func (answer *Answer) prepareMessage() {

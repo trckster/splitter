@@ -10,8 +10,6 @@ var createTripKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	),
 )
 
-// TODO fix problem with invalid button text substitution
-
 var tripKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
 		tgbotapi.NewInlineKeyboardButtonData("", ""),
