@@ -5,10 +5,14 @@ import (
 	"strings"
 )
 
+// TODO add markdown-escaper https://core.telegram.org/bots/api#markdownv2-style
+const ParseModeMarkdown = "MarkdownV2"
+
 type Answer struct {
 	Signature  string
 	Message    string
 	Language   string
+	ParseMode  string
 	Keyboard   tgbotapi.InlineKeyboardMarkup
 	Parameters map[string]string
 }
@@ -19,6 +23,7 @@ func (answer *Answer) constructBotMessage(message *tgbotapi.Message) tgbotapi.Me
 
 	msg := tgbotapi.NewMessage(message.Chat.ID, answer.Message)
 	msg.ReplyToMessageID = message.MessageID
+	msg.ParseMode = answer.ParseMode
 
 	if len(answer.Keyboard.InlineKeyboard) != 0 {
 		answer.prepareKeyboard()

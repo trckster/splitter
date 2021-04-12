@@ -8,7 +8,18 @@ import (
 )
 
 func start(update tgbotapi.Update) Answer {
-	// TODO Check has no trip
+	trip, err := getCurrentTrip(update.Message)
+
+	if err == nil {
+		return Answer{
+			// TODO change this answer
+			Signature:  "hack",
+			Keyboard:   tripKeyboard,
+			Parameters: map[string]string{":hack": "You already have a trip: *" + trip.Name + "*"},
+			ParseMode:  ParseModeMarkdown,
+		}
+	}
+
 	return Answer{Signature: "create-first-trip", Keyboard: createTripKeyboard}
 }
 

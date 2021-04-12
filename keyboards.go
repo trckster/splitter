@@ -12,6 +12,6 @@ var createTripKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 
 var tripKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("", ""),
+		tgbotapi.NewInlineKeyboardButtonData("dummy-button", "dummy-data"),
 	),
 )

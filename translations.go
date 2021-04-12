@@ -11,6 +11,8 @@ func defineTranslations() {
 	defineKeyboardsTexts()
 }
 
+// TODO change all dummy buttons to real text
+
 func defineMessages() {
 	messages = make(map[string]map[string]string)
 
@@ -45,6 +47,8 @@ func defineKeyboardsTexts() {
 	keyboardsTexts["ru"] = make(map[string]string)
 
 	keyboardsTexts["en"]["create-trip"] = "Create new trip"
+	keyboardsTexts["en"]["dummy-button"] = "Dummy button"
 
 	keyboardsTexts["ru"]["create-trip"] = "Создать поездку"
+	keyboardsTexts["ru"]["dummy-button"] = "Глупая кнопочка"
 }
