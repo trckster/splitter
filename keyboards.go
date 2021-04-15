@@ -10,8 +10,50 @@ var createTripKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	),
 )
 
+// TODO add handlers for these buttons
 var tripKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("dummy-button", "dummy-data"),
+		tgbotapi.NewInlineKeyboardButtonData("my-debts", "??"),
+		tgbotapi.NewInlineKeyboardButtonData("members", "??"),
+	),
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("new-expense", "??"),
+	),
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("history", "??"),
+	),
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("my-expenses", "??"),
 	),
 )
+
+func defineKeyboardsTexts() {
+	keyboardsTexts = make(map[string]map[string]string)
+
+	keyboardsTexts["en"] = make(map[string]string)
+	keyboardsTexts["ru"] = make(map[string]string)
+
+	// English
+
+	keyboardsTexts["en"]["create-trip"] = "Create new trip"
+
+	keyboardsTexts["en"]["my-debts"] = "My debts"
+	keyboardsTexts["en"]["members"] = "Members"
+	keyboardsTexts["en"]["new-expense"] = "New expense"
+	keyboardsTexts["en"]["history"] = "History"
+	keyboardsTexts["en"]["my-expenses"] = "My expenses"
+
+	keyboardsTexts["en"]["dummy-button"] = "Dummy button"
+
+	// Russian
+
+	keyboardsTexts["ru"]["create-trip"] = "Создать поездку"
+
+	keyboardsTexts["en"]["my-debts"] = "Мои долги"
+	keyboardsTexts["en"]["members"] = "Участники"
+	keyboardsTexts["en"]["new-expense"] = "Новая трата"
+	keyboardsTexts["en"]["history"] = "История"
+	keyboardsTexts["en"]["my-expenses"] = "Мои траты"
+
+	keyboardsTexts["ru"]["dummy-button"] = "Глупая кнопочка"
+}
