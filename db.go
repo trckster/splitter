@@ -6,7 +6,6 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"os"
-	"time"
 )
 
 func constructDataSourceName() string {
@@ -31,16 +30,10 @@ func connectToDatabase() {
 
 	var err error
 
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
-	for {
-		log.Println("Trying to connect database...")
-		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
-		if err == nil {
-			break
-		}
-
-		time.Sleep(1 * time.Second)
+	if err != nil {
+		panic(err)
 	}
 
 	log.Println("Connected.")
