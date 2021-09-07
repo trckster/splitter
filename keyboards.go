@@ -49,11 +49,11 @@ func defineKeyboardsTexts() {
 
 	keyboardsTexts["ru"]["create-trip"] = "Создать поездку"
 
-	keyboardsTexts["en"]["my-debts"] = "Мои долги"
-	keyboardsTexts["en"]["members"] = "Участники"
-	keyboardsTexts["en"]["new-expense"] = "Новая трата"
-	keyboardsTexts["en"]["history"] = "История"
-	keyboardsTexts["en"]["my-expenses"] = "Мои траты"
+	keyboardsTexts["ru"]["my-debts"] = "Мои долги"
+	keyboardsTexts["ru"]["members"] = "Участники"
+	keyboardsTexts["ru"]["new-expense"] = "Новая трата"
+	keyboardsTexts["ru"]["history"] = "История"
+	keyboardsTexts["ru"]["my-expenses"] = "Мои траты"
 
 	keyboardsTexts["ru"]["dummy-button"] = "Глупая кнопочка"
 }

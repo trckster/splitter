@@ -25,6 +25,8 @@ func main() {
 
 	defineTranslations()
 
+	// TODO add callbacks to the routeRegistry
+	rr.init()
 	rr.registerRoutes()
 	rr.setDescriptions()
 
